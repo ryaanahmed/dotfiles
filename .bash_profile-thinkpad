@@ -1,0 +1,60 @@
+# Make a neato prompt
+# https://www.digitalocean.com/community/tutorials/how-to-customize-your-bash-prompt-on-a-linux-vps
+PS1='\w\nλ '
+
+
+# fix the ncurses bug 
+alias python='winpty python'
+
+
+export PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH
+
+export GIT_SSH_COMMAND='ssh -i ~/.ssh/id_rsa'
+[[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && . "/usr/local/etc/profile.d/bash_completion.sh" # git bash completion
+
+alias notes="cd ~/Dropbox/Notes; fzf --preview 'head -100 {}' --bind 'enter:execute(vim {})'"
+alias next='vim ~/Dropbox/Notes/"next_runx".taskpaper'
+
+# MIT dev shortcuts
+alias comphistdev='source ~/dev/computation_hist/venv/Scripts/activate; cd ~/dev/computation_hist;'
+alias sshcomphist='ssh ubuntu@54.219.189.178'
+alias sshltitest='ssh ubuntu@ltitest.dhmit.xyz -i ~/.ssh/dhmit.pem'
+alias sshrereading='ssh ubuntu@rereading.dhmit.xyz -i ~/.ssh/dhmit.pem'
+
+
+
+# work on music21 or music21j
+alias m21j='cd /Users/ryaanahmed/dev/music21j'
+alias m21p='cd /Users/ryaanahmed/dev/music21; source /Users/ryaanahmed/dev/m21_venv/bin/activate'
+
+alias p3='python3'
+
+# changes directory to the frontmost open finder window
+cdf() {
+    target=`osascript -e 'tell application "Finder" to if (count of Finder windows) > 0 then get POSIX path of (target of front Finder window as text)'`
+    if [ "$target" != "" ]; then
+        cd "$target"; pwd
+    else
+        echo 'No Finder window found' >&2
+    fi
+}
+
+# makes a new notes file in ~/Dropbox/Notes/ with all of the 
+# command line arguments as the name of the file
+nn() {
+    # take all command line args as a string
+    FILENAME="$*"
+
+    if [[ !  -z  $FILENAME  ]]; then
+        # append the date
+        DATE=`date +%Y-%m-%d`
+        FILENAME+=" $DATE"
+    else
+        # if you don't supply a filename, time and datestamp it
+        DATE=`date '+%Y-%m-%d %H.%M'`
+        FILENAME="Untitled Note $DATE"
+    fi
+
+    # let's make it a txt file and open in vim
+    vim ~/Dropbox\ \(Personal\)/Notes/"$FILENAME".txt
+}

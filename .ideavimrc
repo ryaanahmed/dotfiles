@@ -1,0 +1,12 @@
+source ~/.vimrc
+
+" Integrate with system clipboard
+set clipboard=unnamedplus,unnamed
+
+" key bindings for quickly moving between windows
+nmap <c-h> <c-w>h
+nmap <c-l> <c-w>l
+
+" incremental search, ala normal vim
+set incsearch
+

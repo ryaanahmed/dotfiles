@@ -1,0 +1,165 @@
+"turns on syntax highlighting
+syntax enable
+
+"line numbers
+set number
+
+" Use CTRL-S for saving, also in Insert mode
+noremap <C-S> :update<CR>
+vnoremap <C-S> <C-C>:update<CR>
+inoremap <C-S> <C-O>:update<CR>
+
+
+"=== additions from is.gd/IBV2013 =====
+" Highlight the 101st column of wide lines...
+highlight ColorColumn ctermbg=DarkGray
+call matchadd('ColorColumn', '\%101v', 100)
+
+"====[ Make tabs, trailing whitespace, and non-breaking spaces visible ]======
+"exec \"set listchars=tab:\uBB\uBB,trail:\uB7,nbsp:~"
+" set list
+
+"spell check
+":set spell spelllang=en_us
+
+"turns tabs into 4 spaces
+set expandtab
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
+
+"adds anything you yank to the clipboard
+"this doesn't seem to be working, so disabled...
+"set clipboard=unnamedplus
+
+"Turns off arrow keys (eeeep)
+noremap <Up> <nop>
+noremap <Down> <nop>
+noremap <Left> <nop>
+noremap <Right> <nop>
+
+"word wrap
+set linebreak
+
+"autoindent
+set autoindent
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" User defined commands
+
+" command makeParagraphsAtPeriods :%s\. /\.\r\r/g
+
+"Makes a command :Notes filename.ext that saves to my Dropbox notes folder
+" command Notes :w ./Dropbox/Notes/some_
+
+
+" Pretty print xml
+function! DoPrettyXML()
+  " save the filetype so we can restore it later
+  let l:origft = &ft
+  set ft=
+  " delete the xml header if it exists. This will
+  " permit us to surround the document with fake tags
+  " without creating invalid xml.
+  1s/<?xml .*?>//e
+  " insert fake tags around the entire document.
+  " This will permit us to pretty-format excerpts of
+  " XML that may contain multiple top-level elements.
+  0put ='<PrettyXML>'
+  $put ='</PrettyXML>'
+  silent %!xmllint --format -
+  " xmllint will insert an <?xml?> header. it's easy enough to delete
+  " if you don't want it.
+  " delete the fake tags
+  2d
+  $d
+  " restore the 'normal' indentation, which is one extra level
+  " too deep due to the extra tags we wrapped around the document.
+  silent %<
+  " back to home
+  1
+  " restore the filetype
+  exe "set ft=" . l:origft
+endfunction
+command! PrettyXML call DoPrettyXML()
+
+
+" end user defined commands
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" start vim-plug config
+" https://github.com/junegunn/vim-plug
+
+call plug#begin('~/.vim/vim-plug') " Specify a directory for plugins
+
+Plug 'tpope/vim-sensible' " sensible vim defaults
+Plug 'kien/ctrlp.vim' " fuzzy finder directory navigation
+Plug 'vim-syntastic/syntastic' " Syntax checking hacks for vim
+Plug 'bling/vim-airline' " super sweet airline
+Plug 'christoomey/vim-tmux-navigator' " tmux style pane navigation and integration
+Plug 'davidoc/taskpaper.vim' " taskpaper syntax highlighting and whatnot
+Plug 'mitsuhiko/jinja2' " jinja2 sytnax highlighting
+Plug 'tpope/vim-surround' " neato surrounding stuff
+Plug 'pangloss/vim-javascript' " better javascript support
+Plug 'mxw/vim-jsx' " JSX support for react
+
+call plug#end() " Initialize plugin system
+
+" After adding the above to the top of your Vim configuration file, reload it
+" (:source ~/.vimrc) or restart Vim. Now run :PlugInstall to install the plugins.
+
+" Run :PlugUpdate to update the plugins. After the update is finished, you can
+" review the changes by pressing D in the window. Or you can do it later by running :PlugDiff.
+
+" end vim-plug config
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" ctrl-p config
+let g:ctrlp_map = '<c-p>'
+let g:ctrlp_cmd = 'CtrlP'
+
+" caches ctrl-p data
+" and uses ag instead of globpath()
+" https://stackoverflow.com/a/22784889
+let g:ctrlp_cache_dir = $HOME . '/.cache/ctrlp'
+let g:ctrlp_clear_cache_on_exit = 0
+
+if executable('ag')
+    let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+endif
+
+" end ctrl-p config
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" start syntactic config
+nnoremap <c-n> :<C-U>SyntasticCheck<CR>
+
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+" passive mode and turn off check on save means it doesn't auto check on saves
+let g:syntastic_check_on_wq = 0 " slows down every save!
+let g:syntastic_mode_map = { 'mode': 'passive',
+                           \ 'active_filetypes': [],
+                           \ 'passive_filetypes': [] }
+
+" Getting syntastic to look at the project-specific version of eslint
+" and the corresponding .eslintrc.json is a mess... see discussion here:
+" https://github.com/vim-syntastic/syntastic/issues/1692
+" Enable the eslint checker
+let g:syntastic_javascript_checkers=['eslint']
+" Point the checker to the locally installed version of eslint
+let g:syntastic_javascript_eslint_exe='$(npm bin)/eslint'
+
+" end syntactic config
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
