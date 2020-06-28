@@ -1,0 +1,13 @@
+# Make a neato prompt
+# https://www.digitalocean.com/community/tutorials/how-to-customize-your-bash-prompt-on-a-linux-vps
+PS1='\w\nλ '
+
+alias ls='ls -F'
+alias la='ls -lah'
+alias cl='clear'
+
+# reclaim C-s and C-q
+stty -ixon
+
+export GIT_SSH_COMMAND='ssh -i ~/.ssh/id_rsa'
+[[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && . "/usr/local/etc/profile.d/bash_completion.sh" # git bash completion

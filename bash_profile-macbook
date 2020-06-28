@@ -1,0 +1,65 @@
+source ~/dotfiles/bash_profile-base
+
+export PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH
+
+alias notes="cd ~/Dropbox/Notes; fzf --preview 'head -100 {}' --bind 'enter:execute(vim {})'"
+alias next='vim ~/Dropbox/Notes/"next_runx".taskpaper'
+
+# MIT dev shortcuts
+alias comphistdev='source ~/dev/virtualenvs/dhmit_computational_history/bin/activate; cd ~/dev/dhmit/computation_hist;'
+
+# HSE dev shortcuts
+alias sshhse='ssh hse@harvardsqessays.com'
+alias hsedev='source ~/dev/hse/hseDjangoPort/hse_env/bin/activate; cd ~/dev/hse/hseDjangoPort/hse/hse'
+alias hseserv='hsedev; ./manage.py runserver --settings=hse.dev_settings'
+
+# Artusi dev shortcuts
+alias artdev='source /Users/ryaanahmed/dev/artusi_root/venv/bin/activate; cd /Users/ryaanahmed/dev/artusi_root/'
+alias artserv='artdev; ./manage.py runserver 8080'
+alias artprofile='artdev; ./manage.py runserver 8080 --settings=config.settings.profiling_local'
+alias artnext='vim ~/Dropbox/Notes/"artusi current next TODO 2018-02-26".taskpaper'
+# alias oldsshartusi='ssh ubuntu@35.170.159.156'
+alias sshartusi='ssh ubuntu@artusi.xyz -i ~/.ssh/artusi_aws.pem'
+
+# work on music21 or music21j
+alias m21j='cd /Users/ryaanahmed/dev/music21j/src/music21'
+alias m21='cd /Users/ryaanahmed/dev/music21/music21'
+
+# Goldsmiths
+alias sshigor='ssh rahme017@igor.gold.ac.uk'
+
+# Personal Linode
+alias sshpants='ssh root@45.33.29.26'
+
+alias p3='python3'
+
+# changes directory to the frontmost open finder window
+cdf() {
+    target=`osascript -e 'tell application "Finder" to if (count of Finder windows) > 0 then get POSIX path of (target of front Finder window as text)'`
+    if [ "$target" != "" ]; then
+        cd "$target"; pwd
+    else
+        echo 'No Finder window found' >&2
+    fi
+}
+
+# makes a new notes file in ~/Dropbox/Notes/ with all of the 
+# command line arguments as the name of the file
+nn() {
+    # take all command line args as a string
+    FILENAME="$*"
+
+    if [[ !  -z  $FILENAME  ]]; then
+        # append the date
+        DATE=`date +%Y-%m-%d`
+        FILENAME+=" $DATE"
+    else
+        # if you don't supply a filename, time and datestamp it
+        DATE=`date '+%Y-%m-%d %H.%M'`
+        FILENAME="Untitled Note $DATE"
+    fi
+
+    # let's make it a txt file and open in vim
+    vim ~/Dropbox/Notes/"$FILENAME".txt
+}
+
